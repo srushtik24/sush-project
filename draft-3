@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-vidcap = cv2.VideoCapture(r"E:\WhatsApp Video 2021-05-19 at 10.53.00 PM.mp4")
+vidcap = cv2.VideoCapture(r"C:\Users\Srushti Kadam\Desktop\WhatsApp Video 2021-05-18 at 8.01.14 PM.mp4")
 global new_array
 new_array=np.array([0])
 def getFrame(sec):
@@ -10,8 +10,9 @@ def getFrame(sec):
     if hasFrames:
         cv2.imwrite("frame "+str(sec)+" sec.jpg", image) # save frame as JPG file
         img=cv2.imread("frame "+str(sec)+" sec.jpg")
-        img.resize((352,640))         
-        matrix=np.asarray(img)
+        new_image=cv2.resize(img,(20,20))
+        cv2.imwrite("frame_new "+str(sec)+" sec.jpg", new_image)
+        matrix=np.asarray(new_image)
         display(matrix.shape)
         matrix.resize(1,matrix.size)
         display(matrix.shape)
