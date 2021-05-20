@@ -1,1 +1,39 @@
-
+import cv2
+import numpy as np
+from PIL import Image
+vidcap = cv2.VideoCapture(r"E:\WhatsApp Video 2021-05-19 at 10.53.00 PM.mp4")
+global new_array
+new_array=np.array([0])
+def getFrame(sec):
+    global new_array
+    vidcap.set(cv2.CAP_PROP_POS_MSEC,sec*1000)
+    hasFrames,image = vidcap.read()
+    if hasFrames:
+        cv2.imwrite("frame "+str(sec)+" sec.jpg", image) # save frame as JPG file
+        img=cv2.imread("frame "+str(sec)+" sec.jpg")
+        #img.resize((352,640))
+        # Open the image by specifying the image path.
+        #image_path = "image_name.jpeg"
+        image_file = Image.open(img)
+        #image_file.save("image_name.jpg", quality=95)
+        # Changing the image resolution using quality parameter
+        image_file.save("frame_new "+str(sec)+" sec.jpg", quality=25)
+        matrix=np.asarray(img)
+        display(matrix.shape)
+        matrix.resize(1,matrix.size)
+        display(matrix.shape)
+        new_array=np.append(new_array,matrix)
+    return hasFrames
+sec = 0
+#new_array=np.array([0])
+frameRate = 0.5 #it will capture image in each 0.5 second
+success = getFrame(sec)
+while success:
+    sec = sec + frameRate
+    sec = round(sec, 2)
+    success = getFrame(sec)
+vidcap.release()
+cv2.destroyAllWindows()
+display(new_array.shape)
+w=np.random.randn(new_array.size,1) #w has weights
+b=0 
