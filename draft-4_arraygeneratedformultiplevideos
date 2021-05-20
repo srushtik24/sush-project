@@ -1,0 +1,42 @@
+import cv2
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+global new_array
+new_array=np.array([])
+i=0
+names=([r"E:\1.mp4"],[r"E:\2.mp4"],[r"E:\3.mp4"])
+while (i<3):    
+    vidcap = cv2.VideoCapture(names[i][0])
+    def getFrame(sec):
+        global new_array
+        vidcap.set(cv2.CAP_PROP_POS_MSEC,sec*1000)
+        hasFrames,image = vidcap.read()
+        if hasFrames:
+            cv2.imwrite("frame "+str(i)+str(sec)+" sec.jpg", image) # save frame as JPG file
+            img=cv2.imread("frame "+str(i)+str(sec)+" sec.jpg")
+            new_image=cv2.resize(img,(20,20))
+            cv2.imwrite("frame_new "+str(i)+str(sec)+" sec.jpg", new_image)
+            matrix=np.asarray(new_image)
+            display(matrix.shape)
+            matrix.resize(1,matrix.size)
+            #display(matrix.shape)
+            new_array=np.append(new_array,matrix)
+        return hasFrames
+    sec = 0
+    #new_array=np.array([0])
+    frameRate = 0.5 #it will capture image in each 0.5 second
+    success = getFrame(sec)
+    while success:
+        sec = sec + frameRate
+        sec = round(sec, 2)
+        success = getFrame(sec)
+    vidcap.release()
+    cv2.destroyAllWindows()
+                              
+    i=i+1                          
+new_array=np.transpose(new_array)
+display(new_array.shape)
+w=np.random.randn(new_array.size,1) #w has weights
+b=0 
