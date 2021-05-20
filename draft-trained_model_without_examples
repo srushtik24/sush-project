@@ -1,0 +1,48 @@
+import cv2
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+global new_array
+global output
+output=np.array([1,2,3]) #output for trained examples
+new_array=np.array([])
+i=0
+names=([r"E:\1.mp4"],[r"E:\2.mp4"],[r"E:\3.mp4"]) #names of videos in raw text form
+while (i<3):    
+    vidcap = cv2.VideoCapture(names[i][0])
+    def getFrame(sec):
+        global new_array
+        vidcap.set(cv2.CAP_PROP_POS_MSEC,sec*1000) #to make frame rate 
+        hasFrames,image = vidcap.read() 
+        if hasFrames:
+            cv2.imwrite("frame "+str(i)+str(sec)+" sec.jpg", image) # save frame as JPG file
+            img=cv2.imread("frame "+str(i)+str(sec)+" sec.jpg") 
+            new_image=cv2.resize(img,(200,200)) #decreasing pixels
+            cv2.imwrite("frame_new "+str(i)+str(sec)+" sec.jpg", new_image) #save new frame as JPG file
+            matrix=np.asarray(new_image)
+            #display(matrix.shape)
+            matrix.resize(1,matrix.size)
+            #display(matrix.shape)
+            new_array=np.append(new_array,matrix)
+        return hasFrames
+    sec = 0
+    frameRate = 0.5 #it will capture image in each 0.5 second
+    success = getFrame(sec)
+    while success: #moving frame by frame for each video
+        sec = sec + frameRate 
+        sec = round(sec, 2)
+        success = getFrame(sec)
+    vidcap.release()
+    cv2.destroyAllWindows()                              
+    i=i+1 #moving to next video                         
+new_array=new_array.reshape(2640000,3) #reshaping row vector into examples*features
+new_array=np.transpose(new_array) #converting to compatible column vector
+display(new_array.shape)
+model = LinearRegression().fit(new_array, output)
+r_sq = model.score(new_array, output)
+print('coefficient of determination:', r_sq)
+print('intercept:', model.intercept_)
+print('slope:', model.coef_)
+y_pred = model.predict(new_array)
+print('predicted response:', y_pred, sep='\n')
